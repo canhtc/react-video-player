@@ -1,0 +1,12 @@
+.App .controls {
+  text-align: center;
+}
+.App .controls .state {
+  margin: 8px;
+  font-weight: bolder;
+}
+
+.App .controls .button {
+  min-width: 40px;
+  margin: 8px;
+}
