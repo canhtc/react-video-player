@@ -26,6 +26,17 @@ button {
       height: 100%;
       margin: 0;
     }
+    &:hover {
+      .bottom-player-component,
+      .top-player-component {
+        transform: translateY(0);
+        transition-delay: 0s, 2s;
+      }
+    }
+    .bottom-player-component,
+    .top-player-component {
+      transition-delay: 2s, 0s;
+    }
   }
 
   .player-video {
@@ -33,7 +44,7 @@ button {
   }
 
   .bottom-player-component {
-    padding: 10px 0;
+    padding: 8px 0;
     display: flex;
     position: absolute;
     bottom: 0;
@@ -132,7 +143,7 @@ button {
           width: 100%;
         }
         .selected {
-          background-color: rgba(24, 24, 24, 0.5);
+          background-color: rgba(0, 0, 0, 0.5);
         }
       }
     }
@@ -144,7 +155,6 @@ button {
 
       button {
         font-size: 11px;
-        padding: 1px 11px;
         width: 100%;
       }
 
@@ -193,10 +203,13 @@ button {
       }
     }
     .play {
-      padding: 4px 6px 0 6px;
+      padding: 4px 6px 1px 10px;
       img {
         width: 30px;
       }
+    }
+    .fullscreen {
+      padding: 1px 10px 1px 6px;
     }
 
     .volume {
@@ -259,7 +272,7 @@ button {
   }
 
   .top-player-component {
-    padding: 10px 0;
+    padding: 8px 0;
     display: flex;
     position: absolute;
     top: 0;
@@ -274,15 +287,11 @@ button {
       border: 0;
       color: white;
       outline: none;
-      margin: 0px 5px;
-      padding: 10px;
-    }
-  }
-
-  .player:click {
-    .bottom-player-component,
-    .top-player-component {
-      transform: translateY(0);
+      margin: 0px 8px;
+      padding: 8px;
+      img {
+        width: 20px;
+      }
     }
   }
 }

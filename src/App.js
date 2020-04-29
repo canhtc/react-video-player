@@ -1,6 +1,6 @@
 import React from 'react';
 import VideoSource from './assets/video.mp4';
-// import VideoPlayer from './VideoPlayer';
+import VideoPlayer from './VideoPlayer';
 import PlayerComponent from './Player';
 
 function App() {

@@ -7,7 +7,8 @@ import PauseIcon from '../assets/icons/player/pause.svg';
 import VolumeUpIcon from '../assets/icons/player/volume_up.svg';
 import VolumeOffIcon from '../assets/icons/player/volume_off.svg';
 import DownloadIcon from '../assets/icons/player/download.svg';
-import FullscreenIcon from '../assets/icons/player/full.png';
+import FullscreenIcon from '../assets/icons/player/fullscreen.svg';
+import ExitFullscreenIcon from '../assets/icons/player/fullscreen_exit.svg';
 import ClassNames from 'classnames';
 import DurationComponent from '../Duration';
 
@@ -31,9 +32,9 @@ const speeds = [
 ];
 
 const PlayerComponent = ({ src }) => {
-  const refVideo = useRef();
   const progress = useRef();
-
+  const refVideo = useRef();
+  const refFullScreen = useRef();
   const refInterval = useRef();
   const [video, setVideo] = useState({
     playbackRate: 1.0,
@@ -46,6 +47,7 @@ const PlayerComponent = ({ src }) => {
     duration: 0,
     ended: false,
     seeking: false,
+    fullscreen: false,
   });
   useEffect(() => {
     if (video && video.volume && refVideo.current) {
@@ -138,10 +140,54 @@ const PlayerComponent = ({ src }) => {
     }));
   };
 
+  const handleSpeedChange = (playbackRate) => {
+    refVideo.current.playbackRate = playbackRate;
+    return setVideo((state) => ({
+      ...state,
+      playbackRate,
+    }));
+  };
+  const handleFullscreen = () => {
+    // If fullscreen mode is active...
+    if (
+      !!(
+        document.fullScreen ||
+        document.webkitIsFullScreen ||
+        document.mozFullScreen ||
+        document.msFullscreenElement ||
+        document.fullscreenElement
+      )
+    ) {
+      // ...exit fullscreen mode
+      // (Note: this can only be called on document)
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+      else if (document.webkitCancelFullScreen)
+        document.webkitCancelFullScreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
+      setVideo((state) => ({
+        ...state,
+        fullscreen: false,
+      }));
+    } else {
+      if (refFullScreen.current.requestFullscreen)
+        refFullScreen.current.requestFullscreen();
+      else if (refFullScreen.current.mozRequestFullScreen)
+        refFullScreen.current.mozRequestFullScreen();
+      else if (refFullScreen.current.webkitRequestFullScreen) {
+        refVideo.current.webkitRequestFullScreen();
+      } else if (refFullScreen.current.msRequestFullscreen)
+        refFullScreen.current.msRequestFullscreen();
+      setVideo((state) => ({
+        ...state,
+        fullscreen: true,
+      }));
+    }
+  };
   return (
     <div className="player-component">
       <div className="player">
-        <figure>
+        <figure ref={refFullScreen}>
           <video
             ref={refVideo}
             className="player-video viewer"
@@ -152,141 +198,135 @@ const PlayerComponent = ({ src }) => {
           >
             <source src={src} type="video/mp4" />
           </video>
-        </figure>
 
-        <div
-          className="top-player-component"
-          style={{ transform: 'translateY(0)' }}
-        >
-          <div className="left"></div>
-          <div className="right">
-            <button className="settings">
-              <img src={SettingsIcon} alt="" />
-            </button>
+          <div className="top-player-component">
+            <div className="left"></div>
+            <div className="right">
+              <button className="settings">
+                <img src={SettingsIcon} alt="" />
+              </button>
+            </div>
           </div>
-        </div>
-        <div
-          className="bottom-player-component"
-          style={{ transform: 'translateY(0)' }}
-        >
-          {video && video.playing ? (
-            <div>
-              <button onClick={() => handlePause()} className="play">
-                <img src={PauseIcon} alt="" />
-              </button>
-            </div>
-          ) : video.ended ? (
-            <div>
-              <button onClick={() => handlePlay()} className="play">
-                <img src={ReplayIcon} alt="" />
-              </button>
-            </div>
-          ) : (
-            <div>
-              <button onClick={() => handlePlay()} className="play">
-                <img src={PlayArrowIcon} alt="" />
-              </button>
-            </div>
-          )}
-
-          <div
-            onClick={handleSeekChange}
-            onMouseUp={handleSeekMouseUp}
-            onMouseDown={handleSeekMouseDown}
-            ref={progress}
-            className="progress"
-          >
-            <div
-              className="progress-filled"
-              style={{
-                flexBasis: `${video.played * 100}%`,
-              }}
-            />
-            <div
-              className="point"
-              style={{ marginLeft: `${video.played * 100}%` }}
-            >
-              <div className="timer">
-                <button className="timing">
-                  <DurationComponent
-                    seconds={video && video.played * video.duration}
-                  />
+          <div className="bottom-player-component">
+            {video && video.playing ? (
+              <div>
+                <button onClick={() => handlePause()} className="play">
+                  <img src={PauseIcon} alt="" />
                 </button>
               </div>
-            </div>
-          </div>
-          <div>
-            <button className="time">
-              <DurationComponent seconds={video.duration} />
-            </button>
-          </div>
+            ) : video.ended ? (
+              <div>
+                <button onClick={() => handlePlay()} className="play">
+                  <img src={ReplayIcon} alt="" />
+                </button>
+              </div>
+            ) : (
+              <div>
+                <button onClick={() => handlePlay()} className="play">
+                  <img src={PlayArrowIcon} alt="" />
+                </button>
+              </div>
+            )}
 
-          <div className="volume">
-            <button onClick={handleMuteChange}>
-              <img
-                src={video && video.muted ? VolumeOffIcon : VolumeUpIcon}
-                alt=""
+            <div
+              onClick={handleSeekChange}
+              onMouseUp={handleSeekMouseUp}
+              onMouseDown={handleSeekMouseDown}
+              ref={progress}
+              className="progress"
+            >
+              <div
+                className="progress-filled"
+                style={{
+                  flexBasis: `${video.played * 100}%`,
+                }}
               />
-            </button>
-            <div className="volume-scrub">
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step="any"
-                orient="vertical"
-                name="volume"
-                className="volume-slider"
-                value={video.volume}
-                onChange={handleVolumeChange}
-              />
-            </div>
-          </div>
-          <div className="speed">
-            <button>
-              {
-                speeds.filter((speed) => speed.value === video.playbackRate)[0]
-                  .title
-              }
-            </button>
-            <div className="speeds">
-              {speeds.map((q) => (
-                <Fragment>
-                  <button
-                    className={ClassNames({
-                      selected: q.value === video.playbackRate,
-                    })}
-                    key={q.value}
-                    onClick={() =>
-                      setVideo((state) => ({
-                        ...state,
-                        playbackRate: q.value,
-                      }))
-                    }
-                  >
-                    {q.title}
+              <div
+                className="point"
+                style={{ marginLeft: `${video.played * 100}%` }}
+              >
+                <div className="timer">
+                  <button className="timing">
+                    <DurationComponent
+                      seconds={video && video.played * video.duration}
+                    />
                   </button>
-                  <br />
-                </Fragment>
-              ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <button className="time">
+                <DurationComponent seconds={video.duration} />
+              </button>
+            </div>
+
+            <div className="volume">
+              <button onClick={handleMuteChange}>
+                <img
+                  src={video && video.muted ? VolumeOffIcon : VolumeUpIcon}
+                  alt=""
+                />
+              </button>
+              <div className="volume-scrub">
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step="any"
+                  orient="vertical"
+                  name="volume"
+                  className="volume-slider"
+                  value={video.volume}
+                  onChange={handleVolumeChange}
+                />
+              </div>
+            </div>
+            <div className="speed">
+              <button>
+                {
+                  speeds.filter(
+                    (speed) => speed.value === video.playbackRate
+                  )[0].title
+                }
+              </button>
+              <div className="speeds">
+                {speeds.map((q) => (
+                  <Fragment key={q.value}>
+                    <button
+                      className={ClassNames({
+                        selected: q.value === video.playbackRate,
+                      })}
+                      key={q.value}
+                      onClick={() => handleSpeedChange(q.value)}
+                    >
+                      {q.title}
+                    </button>
+                    <br />
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+            <div className="download">
+              <button>
+                <a href={src} download>
+                  <img src={DownloadIcon} alt="" width="35px" />
+                </a>
+              </button>
+            </div>
+            <div className="expand">
+              <button onClick={() => handleFullscreen()} className="fullscreen">
+                <img
+                  src={
+                    video && video.fullscreen
+                      ? ExitFullscreenIcon
+                      : FullscreenIcon
+                  }
+                  alt=""
+                />
+              </button>
             </div>
           </div>
-          <div className="download">
-            <button>
-              <a href={src} download>
-                <img src={DownloadIcon} alt="" width="35px" />
-              </a>
-            </button>
-          </div>
-          <div className="expand">
-            <button className="fullscreen">
-              <img src={FullscreenIcon} alt="" width="35px" />
-            </button>
-            <button className="reduce" style={{ display: 'none' }}>
-              <img src={FullscreenIcon} alt="" width="35px" />
-            </button>
-          </div>
-        </div>
+        </figure>
       </div>
     </div>
   );
