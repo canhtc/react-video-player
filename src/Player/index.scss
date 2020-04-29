@@ -22,6 +22,12 @@ button {
     .top-player-component {
       transition-delay: 2s, 0s;
     }
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   .player-video {
