@@ -1,20 +1,14 @@
 import React from 'react';
-import Video from './assets/video.mp4';
-import VideoPlayer from './VideoPlayer';
+import VideoSource from './assets/video.mp4';
+// import VideoPlayer from './VideoPlayer';
+import PlayerComponent from './Player';
 
 function App() {
   return (
     <div className="App">
       <div>
-        <VideoPlayer
-          width={700}
-          sources={[
-            {
-              src: Video,
-              type: 'video/mp4',
-            },
-          ]}
-        />
+        {/* <VideoPlayer src={VideoSource} width={600} /> */}
+        <PlayerComponent src={VideoSource} />
       </div>
     </div>
   );
