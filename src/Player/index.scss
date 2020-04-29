@@ -2,30 +2,15 @@ button {
   cursor: pointer;
 }
 .player-component {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  background: #141515;
-  min-height: 100vh;
-  background-size: cover;
-  align-items: center;
-  justify-content: center;
-
-  .player {
-    width: 60%;
-    height: auto;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  figure {
+    background-color: #000000;
+    width: 100%;
+    margin: 0;
     position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    padding-top: 0;
     font-size: 0;
     overflow: hidden;
-    -webkit-box-shadow: 0px -1px 80px 0px #000;
-    -moz-box-shadow: 0px -1px 80px 0px #000;
-    box-shadow: 0px -1px 80px 0px #000;
-    figure {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-    }
     &:hover {
       .bottom-player-component,
       .top-player-component {
@@ -280,17 +265,18 @@ button {
     transform: translateY(-100%);
     transition: all 0.9s;
     background: rgba(0, 0, 0, 0.1);
-    justify-content: space-between;
-
-    button {
-      background: none;
-      border: 0;
-      color: white;
-      outline: none;
-      margin: 0px 8px;
-      padding: 8px;
-      img {
-        width: 20px;
+    justify-content: flex-end;
+    .control {
+      button {
+        padding: 8px;
+        background: none;
+        border: 0;
+        color: white;
+        outline: none;
+        margin: 0px 8px;
+        img {
+          width: 30px;
+        }
       }
     }
   }
@@ -338,7 +324,7 @@ input[type='range'] {
 
 /* IE*/
 
-.player {
+figure {
   &:fullscreen,
   &:-webkit-full-screen {
     max-width: 100%;
@@ -356,7 +342,7 @@ video {
 
 @media screen and (max-width: 900px) {
   body {
-    .player {
+    figure {
       max-width: 96%;
       width: 100%;
 
@@ -490,3 +476,57 @@ video {
 }
 
 /*# sourceMappingURL= styles.css.map */
+.controls-video {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translate(0, -50%);
+  border: solid 2px rgba(85, 85, 85, 0.5);
+  border-radius: 5px;
+  button {
+    // background: none;
+    background-color: rgba(85, 85, 85, 0.5);
+    border-radius: 5px;
+    padding: 2px;
+    margin: 4px;
+    border: 0;
+    color: white;
+    outline: none;
+    img {
+      width: 28px;
+    }
+    width: 32px;
+    height: 32px;
+  }
+  .title {
+    button {
+      background: none;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      cursor: auto;
+    }
+    border-bottom: solid 2px rgba(85, 85, 85, 0.5);
+  }
+  .move-buttons {
+    display: grid;
+    padding: 8px 16px;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: solid 2px rgba(85, 85, 85, 0.5);
+  }
+  .zoom-buttons {
+    display: flex;
+    padding: 8px 0;
+    justify-content: center;
+    .information {
+      button {
+        width: 16px;
+        background: none;
+        margin: 4px;
+        padding: 0;
+        border-radius: 0;
+        cursor: auto;
+      }
+    }
+  }
+}
